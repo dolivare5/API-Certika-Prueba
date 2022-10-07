@@ -1,0 +1,27 @@
+# Se especifica la versión de docker-compose
+version: '3'
+
+# Se indican los servicios que se van a utilizar
+services:
+    # Servicio encargado de crear un contenedor para correr la base de datos.
+    db:
+        # Se indica la imagen que se va a utilizar para crear el contenedor.
+        image: mysql:8.0.25
+        # Se indica el nombre del contenedor y de la imagen que se va a crear.
+        container_name: library-db
+        restart: always
+        # Se indica el puerto que se va a utilizar para acceder al contenedor.
+        ports:
+            - "8080:8080"
+        # Se registran las variables de entorno que se van a utilizar en el contenedor.
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+            MYSQL_TCP_PORT: 8080
+        volumes:
+            - ./mysql:/var/lib/mysql
+volumes:
+    mysql:
