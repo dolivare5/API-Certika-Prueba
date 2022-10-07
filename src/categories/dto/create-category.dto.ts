@@ -20,6 +20,11 @@ export class CreateCategoryDto {
      * Utilizo decoradores para indicar las validaciones que se deben aplicar
      * a los datos de entrada.
      */
+    @ApiProperty({
+        example: 'Programación',
+        description: 'Nombre de la categoría',
+        uniqueItems: true,
+    })
     @IsString({ message: 'El nombre de la categoría debe ser un texto' })
     @MinLength(3, { message: 'El nombre de la categoría debe tener al menos 3 caracteres' })
     Cat_name: string;
@@ -32,4 +37,12 @@ export class CreateCategoryDto {
     @IsString({ message: 'La descripción de la categoría debe ser un texto' })
     @IsOptional()
     Cat_description: string;
+    
+    @ApiProperty({
+        example: 'Inactiva',
+        description: 'Estado de la categoría (Activada, Inactiva)',
+    })
+    @IsString({ message: 'El estado de la categoría debe ser un texto' })
+    @IsOptional()
+    Cat_status: string;
 }
