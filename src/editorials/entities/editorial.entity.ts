@@ -13,7 +13,7 @@ import { ApiProperty } from "@nestjs/swagger";
  * Book es una entidad importada de su respectivo archivo. Esta entidad es
  * utilizada para definir la relación entre la entidad Editorial y Book.
  */
-import {Book} from "./book.entity";
+import {Book} from "../../books/entities/book.entity";
 /**
  * @Entity es una clase que se encarga de definir la estructura de la tabla en
  * la base de datos. En este caso la tabla se llama categories y la entidad

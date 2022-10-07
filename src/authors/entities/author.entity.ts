@@ -2,7 +2,7 @@
  * Decoradores importados de typeorm los cuales nos permiten definir la entidad
  * de la base de datos.
  */
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique} from "typeorm";
 /**
  * ApiProperty es un decorador que nos permite definir la documentación de la
  * API. En este caso se utiliza para definir la documentación de la entidad
@@ -14,13 +14,14 @@ import { ApiProperty } from "@nestjs/swagger";
  * la base de datos. En este caso la tabla se llama books y la entidad Book.
  * Sirve para definir la estructura de la tabla en la base de datos.
  */
-import {Book} from "./book.entity";
+import {Book} from "../../books/entities/book.entity";
 /**
  * @Entity es una clase que se encarga de definir la estructura de la tabla en
  * la base de datos. En este caso la tabla se llama categories y la entidad
  * Category. Sirve para definir la estructura de la tabla en la base de datos.
  */
 @Entity({ name: 'authors'})
+@Unique(['Aut_firstName', 'Aut_lastName'])
 /**
  * Author es una clase que se encarga de definir la estructura de la tabla en
  * la base de datos. En este caso la tabla se llama authors y la entidad Author.
@@ -44,7 +45,7 @@ export class Author {
         uniqueItems: true
     })
     @PrimaryGeneratedColumn('increment')
-    Auth_id: number;
+    Aut_id: number;
     
     /**
      * Nombre del autor

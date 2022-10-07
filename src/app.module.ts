@@ -9,6 +9,10 @@ import {ServeStaticModule} from "@nestjs/serve-static";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { InventoriesModule } from './inventories/inventories.module';
 import { LoansModule } from './loans/loans.module';
+import { AuthorsModule } from './authors/authores.module';
+import { CategoriesModule } from './categories/categories.module';
+import { EditorialsModule } from './editorials/editorials.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
     imports: [
@@ -33,6 +37,10 @@ import { LoansModule } from './loans/loans.module';
         BooksModule,
         InventoriesModule,
         LoansModule,
+        AuthorsModule,
+        CategoriesModule,
+        EditorialsModule,
+        UsersModule,
     ],
     controllers: [AppController],
     providers: [AppService],

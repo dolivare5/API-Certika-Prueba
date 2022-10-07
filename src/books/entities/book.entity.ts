@@ -14,9 +14,9 @@ import { ApiProperty } from "@nestjs/swagger";
  * sus respectivos archivos. Estas entidades son importadas para poder
  * relacionarlas con la entidad Book.
  */
-import {Category} from "./category.entity";
-import {Editorial} from "./editorial.entity";
-import {Author} from "./author.entity";
+import {Category} from "../../categories/entities/category.entity";
+import {Editorial} from "../../editorials/entities/editorial.entity";
+import {Author} from "../../authors/entities/author.entity";
 import {Inventory} from "../../inventories/entities/inventory.entity";
 import {Loan} from "../../loans/entities/loan.entity";
 /**

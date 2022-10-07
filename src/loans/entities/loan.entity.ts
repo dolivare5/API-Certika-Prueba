@@ -15,7 +15,7 @@ import { ApiProperty } from "@nestjs/swagger";
  * Sirven para definir la estructura de las tablas en la base de datos.
  */
 import {Book} from "../../books/entities/book.entity";
-import {User} from "./user.entity";
+import {User} from "../../users/entities/user.entity";
 
 /**
  * @Entity es una clase que se encarga de definir la estructura de la tabla en
