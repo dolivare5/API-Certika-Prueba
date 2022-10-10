@@ -2,7 +2,16 @@
  * Decoradores importados de typeorm los cuales nos permiten definir la entidad
  * de la base de datos.
  */
-import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BeforeInsert,
+    BeforeUpdate,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne, OneToMany,
+    OneToOne,
+    PrimaryGeneratedColumn
+} from "typeorm";
 /**
  * ApiProperty es un decorador que nos permite definir la documentación de la
  * API. En este caso se utiliza para definir la documentación de la entidad
@@ -10,6 +19,8 @@ import {Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn}
  */
 import { ApiProperty } from "@nestjs/swagger";
 import {Book} from "../../books/entities/book.entity";
+import {BadRequestException} from "@nestjs/common";
+import {Author} from "../../authors/entities/author.entity";
 
 ;
 /**
@@ -86,11 +97,31 @@ export class Inventory {
     })
     Inv_unitsAvailable: number;
     
-    /**
-     * Relación con la entidad Inventory. Un libro puede tener un solo inventario.
-     * Cascade sirve para que cuando se elimine un libro se elimine el inventario
-     */
-    @OneToOne(() => Book)
-    @JoinColumn()
-    book: Book;
+    @OneToMany(
+        /* Se le pasa la entidad a la que se va a relacionar */
+        () => Book,
+        /* Se le pasa el nombre de la propiedad que se va a relacionar. La propiedad books se encuentra
+        en la entidad Autor */
+        book => book.inventoryInvId
+    )
+    bookBookId: Book;
+    
+    @BeforeInsert()
+    @BeforeUpdate()
+    updateUnitsAvailable() {
+        if (this.Inv_LoanedUnits === undefined){
+            this.Inv_LoanedUnits = 0;
+        }
+        
+        if (this.Inv_unitsPurchased < this.Inv_LoanedUnits) {
+            throw new BadRequestException("No se puede prestar más libros de los que se han comprado");
+        }
+        
+        else if (this.Inv_LoanedUnits > this.Inv_unitsPurchased) {
+            throw new BadRequestException("No hay unidades disponibles");
+        }else{
+            console.log("Actualizando unidades disponibles: ", this.Inv_unitsPurchased, this.Inv_LoanedUnits);
+            this.Inv_unitsAvailable = this.Inv_unitsPurchased - this.Inv_LoanedUnits;
+        }
+    }
 }

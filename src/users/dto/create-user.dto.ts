@@ -67,4 +67,6 @@ export class CreateUserDto {
     @IsString({ message: 'Las observaciones del usuario debe ser un texto' })
     @IsOptional()
     User_observations: string;
+    
+    
 }

@@ -9,6 +9,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
     providers: [EditorialsService],
     imports: [
         TypeOrmModule.forFeature([Editorial])
-    ]
+    ],
+    exports: [EditorialsService]
 })
 export class EditorialsModule {}

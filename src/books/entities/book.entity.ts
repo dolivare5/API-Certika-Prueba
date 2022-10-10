@@ -19,6 +19,7 @@ import {Editorial} from "../../editorials/entities/editorial.entity";
 import {Author} from "../../authors/entities/author.entity";
 import {Inventory} from "../../inventories/entities/inventory.entity";
 import {Loan} from "../../loans/entities/loan.entity";
+import {IsOptional} from "class-validator";
 /**
  * @Entity es una clase que se encarga de definir la estructura de la tabla en
  * la base de datos. En este caso la tabla se llama categories y la entidad
@@ -107,8 +108,8 @@ export class Book {
         nullable: false
     })
     
-    @Column('varchar', {nullable: false})
-    Book_urlGatePhoto: string;
+    @Column('varchar', {nullable: true})
+    Book_gatePhotoUrl: string;
     
     /**
      * Descripción del libro.
@@ -142,7 +143,7 @@ export class Book {
         category => category.booksBooksId,
     )
     @JoinColumn({name: 'categoryCatId'})
-    categoryCatId: Book;
+    categoryCatId: number;
     
     /**
      * Relación con la entidad Editorial. Un libro puede tener una sola
@@ -156,7 +157,7 @@ export class Book {
         editorial => editorial.booksBookId,
     )
     @JoinColumn({name: 'editorialEditId'})
-    editorialEditId: Book;
+    editorialEditId: number;
     
     /**
      * Relación con la entidad Author. Un libro puede tener un solo autor.
@@ -169,7 +170,7 @@ export class Book {
         author => author.booksBookId,
     )
     @JoinColumn({name: 'authorAutId'})
-    authorAuthId: Book;
+    authorAuthId: number;
     
     /**
      * Relación con la entidad Loan. Un libro puede tener varios préstamos, siempre
@@ -182,5 +183,20 @@ export class Book {
         en la entidad Editorial */
         loan => loan.bookBookId
     )
-    loansLoanId: Book;
+    loansLoanId: number;
+    
+    /**
+     * Relación con la entidad Inventory. Un libro puede tener un solo inventario.
+     * Cascade sirve para que cuando se elimine un libro se elimine el inventario
+     */
+    @ManyToOne(
+        /* Se le pasa la entidad a la que se va a relacionar */
+        () => Inventory,
+        /* Se le pasa el nombre de la propiedad que se va a relacionar. La propiedad books se encuentra
+        en la entidad Editorial */
+        inventory => inventory.bookBookId,
+    )
+    @JoinColumn({name: 'inventoryInvId'})
+    inventoryInvId: number;
+    
 }

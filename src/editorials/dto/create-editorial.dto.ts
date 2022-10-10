@@ -39,4 +39,12 @@ export class CreateEditorialDto {
     @IsString({ message: 'La descripción del editorial debe ser un texto' })
     @IsOptional()
     Edit_description: string;
+    
+    @ApiProperty({
+        example: 'Activa',
+        description: 'Estado del editorial (Activa, Inactiva)',
+    })
+    @IsString({ message: 'El estado del editorial debe ser un texto' })
+    @IsOptional()
+    Edit_status: string;
 }

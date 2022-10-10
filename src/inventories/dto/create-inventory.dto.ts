@@ -2,7 +2,7 @@
  * Decoradores importados de la librería class-validator los cuales nos permiten
  * validar los datos de entrada de las rutas.
  */
-import { IsInt, IsOptional, IsString, MinLength } from "class-validator";
+import {IsInt, IsNumber, IsOptional, IsString, MinLength} from "class-validator";
 /**
  * ApiProperty es un decorador que nos permite definir la documentación de la
  * API.
@@ -15,5 +15,7 @@ import { ApiProperty } from "@nestjs/swagger";
  * de la aplicación.
  */
 export class CreateInventoryDto {
-
+    
+    @IsNumber()
+    Inv_unitsPurchased: number
 }

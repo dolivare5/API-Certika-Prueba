@@ -3,7 +3,19 @@
  * permiten definir una clase como controlador de una entidad y además,
  * permiten definir el comportamiento de los endpoints de la entidad.
  */
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post} from '@nestjs/common';
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post, Res,
+    UploadedFile,
+    UseInterceptors
+} from '@nestjs/common';
 /**
  * Se importan los servicios y DTOs que se utilizarán en el controlador.
  */
@@ -16,6 +28,10 @@ import {Book} from "./entities/book.entity";
  * de los endpoints de la entidad y el controlador.
  */
 import {ApiResponse, ApiTags} from "@nestjs/swagger";
+import {FileInterceptor} from "@nestjs/platform-express";
+import {diskStorage} from "multer";
+import {ConfigService} from "@nestjs/config";
+import {fileFilter, fileNamer} from "./helpers";
 
 /**
  * El ApiTags es un decorador que permite agrupar los endpoints de una misma
@@ -28,8 +44,12 @@ export class BooksController {
      * Constructor de la clase. Aquí se inyectan las dependencias.
      * En este caso, inyectamos el servicio de libros.
      * @param booksService
+     * @param configService
      */
-    constructor(private readonly booksService: BooksService) {
+    constructor(
+        private readonly booksService: BooksService,
+        private readonly configService: ConfigService
+    ) {
     }
     
     @ApiResponse({status: 201, description: 'Libro creado correctamente', type: Book})
@@ -40,8 +60,49 @@ export class BooksController {
      * Creando un nuevo libro.
      */
     @Post()
-    create(@Body() createBookDto: CreateBookDto) {
+    create(
+        @Body() createBookDto: CreateBookDto) {
         return this.booksService.create(createBookDto);
+    }
+    
+    @Post('photo')
+    /**
+     *  UseInterceptors es un decorador que se encarga de interceptar la petición y ejecutar el interceptor
+     *  En este caso, el interceptor es FileInterceptor, que se encarga de subir archivos al servidor y
+     *  guardarlos en la carpeta uploads
+     *  */
+    @UseInterceptors(FileInterceptor('file', {
+        fileFilter: fileFilter,
+        storage: diskStorage({
+            destination: './static/uploads/books',
+            filename: fileNamer
+        })
+    }))
+    uploadFile(
+        /**
+         *  Este es el archivo que se va a subir al servidor. Este archivo es de tipo multipart/form-data
+         *  y se llama file
+         *  */
+        @UploadedFile() file: Express.Multer.File
+    ) {
+        /**
+         * Si el archivo no existe, se lanza una excepción
+         */
+        if (!file){
+            throw new BadRequestException('Maake sure that the file is an image');
+        }
+        const secureUrl = `${ this.configService.get('HOST_API')}/books/photo/${file.filename}`;
+        return {secureUrl};
+    }
+    
+    @Get('photo/:photoName')
+    findProductImage(
+        @Res() res: Response,
+        @Param('photoName') photoName: string
+    ) {
+        const path = this.booksService.getStaticProductsImage(photoName);
+        // @ts-ignore
+        res.sendFile(path);
     }
     
     @ApiResponse({status: 200, description: 'Libros encontrados correctamente', type: Book})
@@ -75,8 +136,8 @@ export class BooksController {
      * Este método se encarga de eliminar un libro por su id
      */
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
-        return this.booksService.update(+id, updateBookDto);
+    update(@Param('id', ParseIntPipe) id: number, @Body() updateBookDto: UpdateBookDto) {
+        return this.booksService.update(id, updateBookDto);
     }
     
     

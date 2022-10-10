@@ -2,6 +2,8 @@ import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import {Logger, ValidationPipe} from "@nestjs/common";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
+import bodyParser from "body-parser";
+import {json, urlencoded} from "express";
 
 async function main() {
     /* Creando una instancia de la aplicación NestJS */
@@ -35,11 +37,15 @@ async function main() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
     
+    /* Solucionando el error 413 Payload Too Large in NestJS */
+    app.use(json({limit: '50mb'}));
+    app.use(urlencoded({limit: '50mb', extended: true}));
+    app.enableCors();
     /* Configuración del puerto en el que se ejecutará la aplicación. */
     await app.listen(process.env.PORT_SERVER );
 }
 
 main().then(() =>  {
-    const logger = new Logger('Main');
+    const logger = new Logger('NestApplication');
     logger.log(`Server running on port ${process.env.PORT_SERVER} successfully`)
 });

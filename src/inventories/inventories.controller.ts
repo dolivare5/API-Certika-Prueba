@@ -41,17 +41,6 @@ export class InventoriesController {
     }
     
     
-    @ApiResponse({ status: 201, description: 'Inventarios encontrados correctamente', type: Inventory})
-    @ApiResponse({ status: 400, description: 'Bad request. Verifique que el id del inventario sea válido.'})
-    @ApiResponse({ status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
-    @ApiResponse({ status: 404, description: 'Not found. Verifique que el id del inventario sea válido.'})
-    /**
-     * Este endpoint permite obtener todos los inventarios de un usuario.
-     */
-    @Get()
-    findAll() {
-        return this.inventoriesService.findAll();
-    }
     
     
     @ApiResponse({ status: 201, description: 'Inventario encontrado correctamente', type: Inventory})
@@ -74,10 +63,39 @@ export class InventoriesController {
     /**
      * Este endpoint permite actualizar un inventario de un usuario.
      */
-    @Patch(':id')
+    @Patch('addUnits/:id')
     update(@Param('id') id: string, @Body() updateInventoryDto: UpdateInventoryDto) {
-        return this.inventoriesService.update(+id, updateInventoryDto);
+        return this.inventoriesService.addPurchase(+id, updateInventoryDto);
     }
+    
+    
+    @ApiResponse({ status: 201, description: 'Inventario actualizado correctamente', type: Inventory})
+    @ApiResponse({ status: 400, description: 'Bad request. Verifique que el id del inventario sea válido.'})
+    @ApiResponse({ status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
+    @ApiResponse({ status: 404, description: 'Not found. Verifique que el id del inventario sea válido.'})
+    /**
+     * Este endpoint permite registrar el préstamo de un libro.
+     */
+    @Patch('loan/:id')
+    loan(@Param('id') id: string, @Body() updateInventoryDto: UpdateInventoryDto) {
+        return this.inventoriesService.loanBook(+id, updateInventoryDto);
+    }
+    
+    
+    @ApiResponse({ status: 201, description: 'Inventario actualizado correctamente', type: Inventory})
+    @ApiResponse({ status: 400, description: 'Bad request. Verifique que el id del inventario sea válido.'})
+    @ApiResponse({ status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
+    @ApiResponse({ status: 404, description: 'Not found. Verifique que el id del inventario sea válido.'})
+    /**
+     * Este endpoint permite registrar el préstamo de un libro.
+     */
+    @Patch('return/:id')
+    return(@Param('id') id: string, @Body() updateInventoryDto: UpdateInventoryDto) {
+        return this.inventoriesService.returnBook(+id, updateInventoryDto);
+    }
+    
+    
+    
     
     
     @ApiResponse({ status: 201, description: 'Inventario eliminado correctamente', type: Inventory})

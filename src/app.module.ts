@@ -13,7 +13,6 @@ import { AuthorsModule } from './authors/authores.module';
 import { CategoriesModule } from './categories/categories.module';
 import { EditorialsModule } from './editorials/editorials.module';
 import { UsersModule } from './users/users.module';
-
 @Module({
     imports: [
         ConfigModule.forRoot({

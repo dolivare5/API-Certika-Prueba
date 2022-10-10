@@ -33,7 +33,7 @@ export class AuthorService {
              * Crear una nueva instancia de la entidad Author y llenarla con
              * los datos del DTO.
              * */
-            const author = this.authorRepository.create(createAuthorDto);
+            const author = await this.authorRepository.create(createAuthorDto);
         
             /* Guardando el autor en la base de datos. */
             await this.authorRepository.save(author);
