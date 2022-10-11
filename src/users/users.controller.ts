@@ -62,7 +62,7 @@ export class UsersController {
      * Este endpoint permite obtener un usuario por su id.
      */
     @Get(':id')
-    findOne(@Param('id', ParseIntPipe) id: number) {
+    findOne(@Param('id') id: string) {
         return this.usersService.findOne(id);
     }
     

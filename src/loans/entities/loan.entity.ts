@@ -2,7 +2,16 @@
  * Decoradores importados de typeorm los cuales nos permiten definir la entidad
  * de la base de datos.
  */
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BeforeInsert,
+    BeforeUpdate,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn
+} from "typeorm";
 /**
  * ApiProperty es un decorador que nos permite definir la documentación de la
  * API. En este caso se utiliza para definir la documentación de la entidad
@@ -16,6 +25,9 @@ import { ApiProperty } from "@nestjs/swagger";
  */
 import {Book} from "../../books/entities/book.entity";
 import {User} from "../../users/entities/user.entity";
+import {Inventory} from "../../inventories/entities/inventory.entity";
+import {BadRequestException} from "@nestjs/common";
+import {Transform} from "class-transformer";
 
 /**
  * @Entity es una clase que se encarga de definir la estructura de la tabla en
@@ -55,14 +67,14 @@ export class Loan {
         example: 'El libro debe ser devuelto en 3 días',
         description: 'Observaciones del préstamo',
     })
-    @Column('varchar', {  nullable: false })
+    @Column('varchar', {  nullable: false, default: 'Préstamo realizado sin ningún problema' })
     Loan_Observations: string;
     
     /**
      * Fecha de inicio del préstamo
      */
     @ApiProperty({
-        example: '2021-05-05',
+        example: '"2022-10-10T00:00:00.000Z',
         description: 'Fecha de préstamo',
     })
     @Column('datetime', { nullable: false, default: () => 'CURRENT_TIMESTAMP' })
@@ -75,7 +87,7 @@ export class Loan {
         example: '2021-05-05',
         description: 'Fecha de devolución',
     })
-    @Column('datetime', { nullable: false })
+    @Column('datetime', { nullable: true })
     Loan_returnDate: Date;
     
     /**
@@ -87,9 +99,17 @@ export class Loan {
     })
     @Column('enum', {
         enum: ['prestado', 'devuelto'],
-        default: 'prestado' }
-    )
+        default: 'prestado'
+    })
     Loan_state: string;
+    
+    @ApiProperty({
+        example: 1,
+        description: 'Cantidad de libros prestados o prestados',
+        nullable: false
+    })
+    @Column('int', { nullable: false })
+    Loan_quantity: number;
     
     /**
      * Relación de muchos a uno con la entidad Book. En este caso un préstamo
@@ -100,7 +120,8 @@ export class Loan {
     
     )
     @JoinColumn({name: 'bookBookId'})
-    bookBookId: Book[];
+    @Column('int', { nullable: false })
+    bookBookId: number;
     
     /**
      * Relación de muchos a uno con la entidad User. En este caso un préstamo
@@ -110,5 +131,9 @@ export class Loan {
         () => User, user => user.loansLoanId
     )
     @JoinColumn({name: 'userUserId'})
-    userUserId: User;
+    @Column('int', { nullable: false })
+    userUserId: number;
+
+    
+    
 }

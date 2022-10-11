@@ -20,6 +20,7 @@ import {InventoriesModule} from "../inventories/inventories.module";
         AuthorsModule,
         InventoriesModule,
     ],
+    exports: [BooksService]
 })
 export class BooksModule {
 }

@@ -4,6 +4,7 @@ import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {Inventory} from "./entities/inventory.entity";
 import {DataSource, Repository} from "typeorm";
+import {log} from "util";
 
 @Injectable()
 export class InventoriesService {
@@ -20,6 +21,14 @@ export class InventoriesService {
      */
     async create(createInventoryDto: CreateInventoryDto) {
         try {
+            /**
+             * Se comprueba de que no exista un libro con el mismo id que el que se
+             * quiere registrar en el inventario.
+             */
+            const book = await this.inventoryRepository.findOneBy({BookBookId: createInventoryDto.BookBookId});
+            if (book) {
+                throw new BadRequestException(`Ya existe un libro con el id ${createInventoryDto.BookBookId}`);
+            }
             /**
              * Crear una nueva instancia de la entidad Inventories y llenarla con
              * los datos del DTO.
@@ -63,6 +72,28 @@ export class InventoriesService {
     }
     
     /**
+     * Método que muestra los inventarios de un libro.
+     * @returns Devuelve un inventario.
+     * @param BookBookId
+     */
+    async findOneByBookId(BookBookId: number) {
+        /**
+         * Se obtiene la inventory con el id del libro.
+         */
+        const inventory = await this.inventoryRepository.findOneBy({BookBookId});
+        /**
+         * Si no se encuentra el inventario, se lanza una excepción.
+         */
+        if (!inventory) {
+            throw new BadRequestException(`No existe un libro registrado en el inventario con el id ${BookBookId}`);
+        }
+        /**
+         * Si se encuentra el inventario, se devuelve.
+         */
+        return inventory;
+    }
+    
+    /**
      * Método que permite agregar unidades compradas a un inventario.
      * @param Inv_id
      * @param updateInventoryDto
@@ -86,6 +117,8 @@ export class InventoriesService {
         if (isNaN(updateInventoryDto.Inv_unitsPurchased)) {
             throw new BadRequestException("La cantidad de unidades a comprar no es válida");
         }
+        
+        
         /**
          * Se actualiza la cantidad de libros prestados.
          */
@@ -112,8 +145,8 @@ export class InventoriesService {
         /**
          * Se actualiza la cantidad de libros prestados.
          */
-        if (updateInventoryDto.Inv_LoanedUnits <= 0){
-            throw new BadRequestException("No se pueden prestar 0 o menos libros");
+        if (inventory.Inv_unitsAvailable === 0){
+            throw new BadRequestException("Ya se agotaron las unidades disponibles");
         }
         inventory.Inv_LoanedUnits+=updateInventoryDto.Inv_LoanedUnits;
         
@@ -126,6 +159,7 @@ export class InventoriesService {
          * obtener una inventory de la base de datos, pero sin guardarla en la
          * base de datos.
          */
+        console.log('Return: ', updateInventoryDto)
         const inventory = await this.inventoryRepository.preload({Inv_id});
         
         /**
@@ -137,10 +171,10 @@ export class InventoriesService {
         /**
          * Se actualiza la cantidad de libros prestados y unidades disponibles.
          */
-        inventory.Inv_LoanedUnits-=updateInventoryDto.Inv_unitsAvailable;
-        inventory.Inv_unitsAvailable+=updateInventoryDto.Inv_unitsAvailable;
-        if (inventory.Inv_LoanedUnits<=0 || updateInventoryDto.Inv_unitsAvailable<=0){
-            throw new BadRequestException("No se pueden hacer devoluciones negativas o de 0 libros");
+        inventory.Inv_LoanedUnits-=updateInventoryDto.Inv_LoanedUnits;
+        inventory.Inv_unitsAvailable+=updateInventoryDto.Inv_LoanedUnits;
+        if (inventory.Inv_LoanedUnits<=0){
+            throw new BadRequestException("Ya se han devuelto todas las unidades del libro");
         }
         return  await this.handleDBUpdate(inventory);
     }

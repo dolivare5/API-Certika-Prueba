@@ -8,6 +8,7 @@ import {IsInt, IsNumber, IsOptional, IsString, MinLength} from "class-validator"
  * API.
  */
 import { ApiProperty } from "@nestjs/swagger";
+import {Column} from "typeorm";
 
 /**
  * Esta clase es un DTO que se utiliza para crear una categoría.
@@ -16,6 +17,18 @@ import { ApiProperty } from "@nestjs/swagger";
  */
 export class CreateInventoryDto {
     
-    @IsNumber()
+    @ApiProperty({
+        example: '1',
+        description: "Cantidad de unidades compradas",
+    })
+    @IsNumber({}, { message: 'La cantidad de unidades debe ser un número' })
     Inv_unitsPurchased: number
+    
+    @ApiProperty({
+        example: 1,
+        description: 'Identificador único del libro',
+        uniqueItems: true
+    })
+    @IsInt({ message: 'El id del libro debe ser un número entero' })
+    BookBookId: number;
 }

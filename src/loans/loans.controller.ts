@@ -26,27 +26,27 @@ export class LoansController {
      * En este caso, inyectamos el servicio de préstamos.
      * @param loansService
      */
-    constructor(private readonly loansService: LoansService) {}
-    
-    
-    @ApiResponse({ status: 201, description: 'Préstamo creado correctamente', type: Loan})
-    @ApiResponse({ status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
-    @ApiResponse({ status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
-    @ApiResponse({ status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
-    /**
-     * Este endpoint permite crear un préstamo.
-     */
-    @Post()
-    create(@Body() createLoanDto: CreateLoanDto) {
-        return this.loansService.create(createLoanDto);
+    constructor(private readonly loansService: LoansService) {
     }
     
     
+    @ApiResponse({status: 201, description: 'Préstamo creado correctamente', type: Loan})
+    @ApiResponse({status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
+    @ApiResponse({status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
+    @ApiResponse({status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
+    /**
+     * Este endpoint permite realizar un préstamo.
+     */
+    @Post()
+    lendBook(@Body() createLoanDto: CreateLoanDto) {
+        return this.loansService.lendBook(createLoanDto);
+    }
     
-    @ApiResponse({ status: 200, description: 'Préstamos encontrados correctamente', type: Loan})
-    @ApiResponse({ status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
-    @ApiResponse({ status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
-    @ApiResponse({ status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
+    
+    @ApiResponse({status: 200, description: 'Préstamos encontrados correctamente', type: Loan})
+    @ApiResponse({status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
+    @ApiResponse({status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
+    @ApiResponse({status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
     /**
      * Este endpoint permite obtener todos los préstamos.
      */
@@ -56,11 +56,10 @@ export class LoansController {
     }
     
     
-    
-    @ApiResponse({ status: 200, description: 'Préstamo encontrado correctamente', type: Loan})
-    @ApiResponse({ status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
-    @ApiResponse({ status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
-    @ApiResponse({ status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
+    @ApiResponse({status: 200, description: 'Préstamo encontrado correctamente', type: Loan})
+    @ApiResponse({status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
+    @ApiResponse({status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
+    @ApiResponse({status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
     /**
      * Este endpoint permite obtener un préstamo por su id.
      */
@@ -70,28 +69,15 @@ export class LoansController {
     }
     
     
-    @ApiResponse({ status: 200, description: 'Préstamo actualizado correctamente', type: Loan})
-    @ApiResponse({ status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
-    @ApiResponse({ status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
-    @ApiResponse({ status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
+    @ApiResponse({status: 200, description: 'Préstamo actualizado correctamente', type: Loan})
+    @ApiResponse({status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
+    @ApiResponse({status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
+    @ApiResponse({status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
     /**
-     * Este endpoint permite actualizar un préstamo por su id.
+     * Este endpoint permite devolver un libro.
      */
-    @Patch(':id')
-    update(@Param('id', ParseIntPipe) id: number, @Body() updateLoanDto: UpdateLoanDto) {
-        return this.loansService.update(+id, updateLoanDto);
-    }
-    
-    
-    @ApiResponse({ status: 200, description: 'Préstamo eliminado correctamente', type: Loan})
-    @ApiResponse({ status: 400, description: 'Bad request. Verifique que el id del préstamo sea válido.'})
-    @ApiResponse({ status: 403, description: 'Forbidden. Verifique que el token sea válido o que no haya expirado.'})
-    @ApiResponse({ status: 404, description: 'Not found. Verifique que el id del préstamo sea válido.'})
-    /**
-     * Este endpoint permite eliminar un préstamo por su id.
-     */
-    @Delete(':id')
-    remove(@Param('id', ParseIntPipe) id: number) {
-        return this.loansService.remove(id);
+    @Patch('return/:id')
+    returnBook(@Param('id', ParseIntPipe) id: number, @Body() updateLoanDto: UpdateLoanDto) {
+        return this.loansService.returnBook(+id);
     }
 }

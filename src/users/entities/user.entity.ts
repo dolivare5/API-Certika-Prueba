@@ -2,7 +2,7 @@
  * Decoradores importados de typeorm los cuales nos permiten definir la entidad
  * de la base de datos.
  */
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 /**
  * ApiProperty es un decorador que nos permite definir la documentación de la
  * API. En este caso se utiliza para definir la documentación de la entidad
@@ -125,7 +125,7 @@ export class User {
      * varios préstamos.
      */
     @OneToMany(
-        () => Loan, loan => loan.userUserId,
+        () => Loan, loan => loan.Loan_id,
         /**
          * Cascade es una propiedad que nos permite definir que si se elimina
          * un usuario se eliminen todos los préstamos asociados a ese usuario.
@@ -134,5 +134,6 @@ export class User {
          * a ese usuario.
          */
     )
-    loansLoanId: Loan[];
+    @JoinColumn({ name: 'UserUserid' })
+    loansLoanId: number[];
 }

@@ -12,7 +12,6 @@ import {UpdateBookDto} from "./dto/update-book.dto";
 import {EditorialsService} from "../editorials/editorials.service";
 import {CategoriesService} from "../categories/categories.service";
 import {AuthorService} from "../authors/authores.service";
-import {InventoriesService} from "../inventories/inventories.service";
 
 @Injectable()
 export class BooksService {
@@ -24,7 +23,6 @@ export class BooksService {
      * @param categoriesService
      * @param authorService
      * @param dataSource
-     * @param inventoriesService
      */
     constructor(
         @InjectRepository(Book)
@@ -34,7 +32,6 @@ export class BooksService {
         private readonly categoriesService: CategoriesService,
         private readonly authorService: AuthorService,
         private readonly dataSource: DataSource,
-        private readonly inventoriesService: InventoriesService
     ) {}
     
     
@@ -76,11 +73,26 @@ export class BooksService {
      * Método para obtener todos los libros.
      * @return Book[]
      */
-    findAll() {
+    async findAll() {
         /**
          * Se devuelven todos los autores de la base de datos.
          */
-        return this.bookRepository.find();
+        const books = await this.bookRepository.find();
+        /**
+         * Se recorren los libros y se obtiene la categoría y la editorial de cada uno.
+         */
+        const arrayBooks = [];
+        for (let book of books) {
+            const {Cat_name} = await this.categoriesService.findOne(book.categoryCatId);
+            const {Edit_name} = await this.editorialsService.findOne(book.editorialEditId);
+            const {Aut_firstName, Aut_lastName} = await this.authorService.findOne(book.authorAuthId);
+            const {Book_name, Book_numPag, Book_placeOfEdition} = book;
+            arrayBooks.push({
+                Book_name, Book_numPag, Book_placeOfEdition, Cat_name,
+                Edit_name, Aut_firstName, Aut_lastName,
+            });
+        }
+        return arrayBooks;
     }
     
     /**
@@ -102,21 +114,26 @@ export class BooksService {
         /**
          * Si el libro existe, se devuelve.
          */
-        return book;
+        const category = await this.categoriesService.findOne(book.categoryCatId);
+        const editorial = await this.editorialsService.findOne(book.editorialEditId);
+        const author = await this.authorService.findOne(book.authorAuthId);
+        return {book, category, editorial, author};
     }
     
     /**
      * Método para actualizar un libro.
      * @param Book_id
      * @param updateBookDto
+     * @param secureUrl
+     * @param nameFile
      */
-    async update(Book_id: number, updateBookDto: UpdateBookDto) {
+    async update(Book_id: number, updateBookDto: UpdateBookDto, secureUrl?: string, nameFile?:string) {
         /**
          * Se obtiene el libro de la base de datos. El método preload permite
          * obtener una categoría de la base de datos, pero no la guarda en la
          * base de datos.
          */
-        const book = await this.bookRepository.preload({  Book_id, ...updateBookDto });
+        const book = await this.bookRepository.preload({  Book_id, ...updateBookDto, Book_gatePhotoUrl: nameFile });
         /**
          * Si el libro no existe, se lanza una excepción.
          */
@@ -154,7 +171,11 @@ export class BooksService {
             /**
              * Se devuelve el libro actualizado.
              */
-            return this.findOne(Book_id);
+            const img = await this.findOne(Book_id);
+            return {
+                img,
+                secureUrl
+            };
             
         } catch (error) {
             /**
@@ -182,7 +203,7 @@ export class BooksService {
             /**
              * Se busca el Libro por su ID para verificar que exista.
              * */
-            const book : Book = await this.findOne(Book_id);
+            const book: Book = await this.bookRepository.findOneBy({ Book_id });
             /**
              * Se elimina el libro de la base de datos.
              */
@@ -218,7 +239,6 @@ export class BooksService {
         const editorial = await this.editorialsService.findOne(createBookDto.editorialEditId);
         const category = await this.categoriesService.findOne(createBookDto.categoryCatId);
         const author = await this.authorService.findOne(createBookDto.authorAutId);
-        const inventory = await this.inventoriesService.findOne(createBookDto.inventoryInvId);
         if (!editorial) {
             throw new BadRequestException(`La editorial con el ID ${createBookDto.editorialEditId} no existe`);
         }
@@ -227,9 +247,6 @@ export class BooksService {
         }
         if (!author) {
             throw new BadRequestException(`El autor con el ID ${createBookDto.authorAutId} no existe`);
-        }
-        if (!inventory) {
-            throw new BadRequestException(`El inventario con el ID ${createBookDto.inventoryInvId} no existe`);
         }
         return true;
     }

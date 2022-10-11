@@ -189,14 +189,13 @@ export class Book {
      * Relación con la entidad Inventory. Un libro puede tener un solo inventario.
      * Cascade sirve para que cuando se elimine un libro se elimine el inventario
      */
-    @ManyToOne(
+    @OneToMany(
         /* Se le pasa la entidad a la que se va a relacionar */
         () => Inventory,
         /* Se le pasa el nombre de la propiedad que se va a relacionar. La propiedad books se encuentra
         en la entidad Editorial */
-        inventory => inventory.bookBookId,
+        inventory => inventory.BookBookId,
     )
-    @JoinColumn({name: 'inventoryInvId'})
     inventoryInvId: number;
     
 }

@@ -28,15 +28,16 @@ export class CreateLoanDto {
     @IsString({ message: 'La descripción del préstamo debe ser un texto' })
     @MinLength(3, { message: 'La descripción del préstamo debe tener al menos 3 caracteres' })
     @IsOptional()
-    Loan_description: string;
+    Loan_observation: string;
     
     @ApiProperty({
         example: '2021-05-01',
         description: 'Fecha de Devolución',
         nullable: false,
     })
-    @IsDate({ message: 'La fecha de devolución debe ser una fecha' })
-    Loan_returnDate: Date;
+    @IsString({ message: 'La fecha de devolución debe ser una fecha' })
+    @IsOptional()
+    Loan_returnDate: string | Date;
     
     @ApiProperty({
         example: '1',
@@ -45,4 +46,20 @@ export class CreateLoanDto {
     })
     @IsInt({ message: 'El id del libro debe ser un número' })
     bookBookId: number;
+    
+    @ApiProperty({
+        example: 1,
+        description: 'Id del usuario',
+        nullable: false
+    })
+    @IsInt({ message: 'El id del usuario debe ser un número entero' })
+    userUserId: number;
+    
+    @ApiProperty({
+        example: 1,
+        description: 'Cantidad de libros prestados o devueltos',
+        nullable: false
+    })
+    @IsInt({ message: 'La cantidad de libros prestados o devueltos debe ser un número entero' })
+    Loan_quantity: number;
 }

@@ -64,15 +64,6 @@ export class CreateBookDto {
     Book_numPag: number;
     
     @ApiProperty({
-        example: 'moto.jpg',
-        description: 'Imagen del libro',
-        nullable: true
-    })
-    @IsString({ message: 'La imagen del libro debe ser un texto' })
-    @IsOptional()
-    Book_gatePhotoUrl: string;
-    
-    @ApiProperty({
         example: 1,
         description: 'Id del autor de la categoría',
         nullable: false
@@ -87,7 +78,6 @@ export class CreateBookDto {
         nullable: false
     })
     @IsInt({ message: 'El id del autor debe ser un número entero' })
-    @IsOptional()
     authorAutId: number;
     
     @ApiProperty({
@@ -95,17 +85,7 @@ export class CreateBookDto {
         description: 'Id del editorial del libro',
         nullable: false
     })
-    @IsOptional()
     @IsInt({ message: 'El id del editorial debe ser un número entero' })
     editorialEditId: number;
-    
-    @ApiProperty({
-        example: 1,
-        description: 'Id del inventario del libro',
-        nullable: false
-    })
-    @IsOptional()
-    @IsInt({ message: 'El id del inventario debe ser un número entero' })
-    inventoryInvId: number;
     
 }

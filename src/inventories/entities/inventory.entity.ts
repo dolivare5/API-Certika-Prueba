@@ -21,6 +21,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import {Book} from "../../books/entities/book.entity";
 import {BadRequestException} from "@nestjs/common";
 import {Author} from "../../authors/entities/author.entity";
+import {Loan} from "../../loans/entities/loan.entity";
 
 ;
 /**
@@ -97,14 +98,21 @@ export class Inventory {
     })
     Inv_unitsAvailable: number;
     
-    @OneToMany(
-        /* Se le pasa la entidad a la que se va a relacionar */
-        () => Book,
-        /* Se le pasa el nombre de la propiedad que se va a relacionar. La propiedad books se encuentra
-        en la entidad Autor */
-        book => book.inventoryInvId
+    /**
+     * Índice del libro prestado.
+     */
+    @ApiProperty({
+        example: 1,
+        description: 'Identificador único del libro',
+        uniqueItems: true
+    })
+    
+    @ManyToOne(
+        type => Book,
+        book => book.Book_id
     )
-    bookBookId: Book;
+    @JoinColumn({ name: 'BookBookId' })
+    BookBookId: number;
     
     @BeforeInsert()
     @BeforeUpdate()
@@ -120,7 +128,6 @@ export class Inventory {
         else if (this.Inv_LoanedUnits > this.Inv_unitsPurchased) {
             throw new BadRequestException("No hay unidades disponibles");
         }else{
-            console.log("Actualizando unidades disponibles: ", this.Inv_unitsPurchased, this.Inv_LoanedUnits);
             this.Inv_unitsAvailable = this.Inv_unitsPurchased - this.Inv_LoanedUnits;
         }
     }

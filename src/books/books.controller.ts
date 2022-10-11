@@ -65,45 +65,6 @@ export class BooksController {
         return this.booksService.create(createBookDto);
     }
     
-    @Post('photo')
-    /**
-     *  UseInterceptors es un decorador que se encarga de interceptar la petición y ejecutar el interceptor
-     *  En este caso, el interceptor es FileInterceptor, que se encarga de subir archivos al servidor y
-     *  guardarlos en la carpeta uploads
-     *  */
-    @UseInterceptors(FileInterceptor('file', {
-        fileFilter: fileFilter,
-        storage: diskStorage({
-            destination: './static/uploads/books',
-            filename: fileNamer
-        })
-    }))
-    uploadFile(
-        /**
-         *  Este es el archivo que se va a subir al servidor. Este archivo es de tipo multipart/form-data
-         *  y se llama file
-         *  */
-        @UploadedFile() file: Express.Multer.File
-    ) {
-        /**
-         * Si el archivo no existe, se lanza una excepción
-         */
-        if (!file){
-            throw new BadRequestException('Maake sure that the file is an image');
-        }
-        const secureUrl = `${ this.configService.get('HOST_API')}/books/photo/${file.filename}`;
-        return {secureUrl};
-    }
-    
-    @Get('photo/:photoName')
-    findProductImage(
-        @Res() res: Response,
-        @Param('photoName') photoName: string
-    ) {
-        const path = this.booksService.getStaticProductsImage(photoName);
-        // @ts-ignore
-        res.sendFile(path);
-    }
     
     @ApiResponse({status: 200, description: 'Libros encontrados correctamente', type: Book})
     @ApiResponse({status: 400, description: 'Bad request. Verifique que los campos del libro sean válido.'})
@@ -151,5 +112,48 @@ export class BooksController {
     @Delete(':id')
     remove(@Param('id', ParseIntPipe) id: number) {
         return this.booksService.remove(id);
+    }
+    
+    /* Este es un método que se encarga de subir archivos al servidor */
+    @Post('photo/:id')
+    /**
+     *  UseInterceptors es un decorador que se encarga de interceptar la petición y ejecutar el interceptor
+     *  En este caso, el interceptor es FileInterceptor, que se encarga de subir archivos al servidor y
+     *  guardarlos en la carpeta uploads
+     *  */
+    @UseInterceptors(FileInterceptor('file', {
+        fileFilter: fileFilter,
+        storage: diskStorage({
+            destination: './static/uploads/books',
+            filename: fileNamer
+        })
+    }))
+    async uploadFile(
+        /**
+         *  Este es el archivo que se va a subir al servidor. Este archivo es de tipo multipart/form-data
+         *  y se llama file
+         *  */
+        @UploadedFile() file: Express.Multer.File,
+        @Param('id', ParseIntPipe) id: number
+    ) {
+        /**
+         * Si el archivo no existe, se lanza una excepción
+         */
+        if (!file){
+            throw new BadRequestException('La imagen es requerida');
+        }
+        const secureUrl = `${ this.configService.get('HOST_API')}/books/photo/${file.filename}`;
+        return await this.booksService.update(id, undefined, secureUrl, file.filename);
+    }
+    
+    
+    @Get('photo/:imageName')
+    findProductImage(
+        @Res() res: Response,
+        @Param('imageName') imageName: string
+    ) {
+        const path = this.booksService.getStaticProductsImage(imageName);
+        // @ts-ignore
+        res.sendFile(path);
     }
 }

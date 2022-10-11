@@ -47,4 +47,5 @@ export class CreateEditorialDto {
     @IsString({ message: 'El estado del editorial debe ser un texto' })
     @IsOptional()
     Edit_status: string;
+    
 }

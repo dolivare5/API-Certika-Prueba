@@ -10,6 +10,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
     imports: [
         // Importamos el módulo de TypeOrm para la entidad User.
         TypeOrmModule.forFeature([User]),
-    ]
+    ],
+    exports: [ UsersService ]
 })
 export class UsersModule {}
